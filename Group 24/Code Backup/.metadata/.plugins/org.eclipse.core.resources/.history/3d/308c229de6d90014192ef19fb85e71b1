@@ -1,0 +1,5 @@
+package org.rongubombu.db;
+
+public class EsDataHelper {
+
+}

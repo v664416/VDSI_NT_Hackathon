@@ -1,0 +1,21 @@
+package org.rongubombu.db;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class EsDataHelper {
+	
+	private static List<Book> esBooks = null;
+	
+	public void addbooksToUpdate(List<Book> books){
+		if(null==esBooks){
+			esBooks = new ArrayList<Book>();
+		}
+		esBooks.addAll(books);
+	}
+	
+	public void clear(){
+		esBooks=null;
+	}
+
+}

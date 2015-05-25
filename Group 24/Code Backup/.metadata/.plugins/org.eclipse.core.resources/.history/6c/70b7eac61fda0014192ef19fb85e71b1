@@ -1,0 +1,51 @@
+package org.rongubombu.db;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class CallableExecutor<V> {
+
+	private static ThreadPoolExecutor threadPoolExecutor = null;
+	
+	public CallableExecutor() {
+		if(null==threadPoolExecutor){
+			threadPoolExecutor = new ThreadPoolExecutor(50, 50, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		}
+	}
+	
+	public void process(List<? extends Callable<?>> processors){
+
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		if(null!=processors){
+			for(Callable<?> callable : processors){
+				if(null!=callable){
+					futures.add(threadPoolExecutor.submit(callable));
+				}
+			}
+			
+			for(Future<V> future : futures){
+				if(null!=future){
+					try {
+						future.get();
+					} catch (Exception e) {
+						future.cancel(false);
+					}
+				}
+			}
+		}
+		shutdown();
+	}
+	
+	private void shutdown(){
+		if(null!=threadPoolExecutor){
+			threadPoolExecutor.shutdown();
+		}
+	}
+	
+	
+}

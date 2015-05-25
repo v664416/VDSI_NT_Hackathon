@@ -1,0 +1,10 @@
+package org.rongubombu.db;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DBManager {
+	
+	private List<Book> books = new ArrayList<Book>();
+
+}

@@ -1,0 +1,16 @@
+package org.rongubombu.elsprocessors;
+
+import org.elasticsearch.action.search.SearchResponse;
+import org.rongubombu.elasticsearch.ELSearchConnectionUtil;
+
+public class ElasticSearchProcessor{
+
+	/*public String getQueryResult(String query) throws Exception{
+		return ELSearchConnectionUtil.getDocument(query);
+	}*/
+	
+	
+	public SearchResponse getQueryResult(String query) throws Exception {
+		return ELSearchConnectionUtil.getResult(query);
+	}
+}

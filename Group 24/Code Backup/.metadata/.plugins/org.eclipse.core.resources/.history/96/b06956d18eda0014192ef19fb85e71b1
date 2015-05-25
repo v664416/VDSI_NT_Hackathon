@@ -1,0 +1,115 @@
+package org.rongubombu.db;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CatalogProcessor {
+
+	private static final CatalogProcessor instance = new CatalogProcessor();
+	private static final String FILEPATH = "D:/";
+	private static final String SEPERATOR = ",";
+	private static final String FILENAME = "data.csv";
+	private static final int INCR_VAL = 1000;
+
+	private CatalogProcessor() {
+
+	}
+
+	public static CatalogProcessor getInstance() {
+		return instance;
+	}
+
+	public void processCatalog() {
+		BufferedReader br = null;
+		String line = "";
+		CallableExecutor executor = null;
+		try {
+
+			long strter = System.currentTimeMillis();
+			executor = new CallableExecutor();
+			br = new BufferedReader(new FileReader(FILEPATH + FILENAME));
+			List<String> sqls = new ArrayList<String>();
+			List<String> books = new ArrayList<String>();
+			List<String> bookIds = new ArrayList<String>();
+			int counter = 0;
+			long bookId = getCurrentBookId();
+			
+			while ((line = br.readLine()) != null) {
+				String[] values = line.split(SEPERATOR);
+				if (null != values && values.length == 7) {
+					bookId++;
+					if (null != values[6] && "ADD".equals(values[6].trim())) {
+						sqls.add("INSERT INTO BOOKS (BOOK_NAME,AUTHOR_NAME,PUBLISHER,CATEGORY,DESCRIPTION,URL,BOOK_ID) VALUES ('"
+								+ values[0]
+								+ "', '"
+								+ values[1]
+								+ "', '"
+								+ values[2]
+								+ "', '"
+								+ values[3]
+								+ "', '"
+								+ values[4] + "', '" + values[5] + "',"+bookId+")");
+						books.add("{ \"book_name\" :  \""+values[0]+"\", \"auth_name\" :  \""+values[1]+
+								"\", \"category\" : \""+values[3]+"\", \"publisher\" :  \""+values[2]+"\"}");
+						bookIds.add(String.valueOf(bookId));
+					}
+				}
+				counter++;
+				if (counter == INCR_VAL) {
+					counter = 0;
+					executor.process(new DbUpdateProcessor(sqls));
+					sqls = new ArrayList<String>();
+				}
+			}
+			if (!sqls.isEmpty()) {
+				executor.process(new DbUpdateProcessor(sqls));
+			}
+			executor.check();
+			System.out.println("Processing total: "
+					+ (System.currentTimeMillis() - strter));
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+	}
+
+	private long getCurrentBookId() {
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBConnectionUtil.getConection();
+			String sql = "SELECT MAX(BOOK_ID) AS COUNT FROM BOOKS";
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getLong("COUNT");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnectionUtil.close(ps, rs);
+			DBConnectionUtil.closeConection(conn);
+		}
+		return 0;
+	}
+}

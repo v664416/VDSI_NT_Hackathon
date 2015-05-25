@@ -1,0 +1,8 @@
+package org.rongubombu.db;
+
+public class DbHelper {
+	
+	public boolean isBookExist(String bookName){
+		
+	}
+}

@@ -1,0 +1,41 @@
+package org.rongubombu.db;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class DbHelper {
+	
+	public boolean updateBook(Book book){
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBConnectionUtil.getConection();
+			String sql="";
+			if(book.getAction().equals(ACTION.ADD)){
+			sql = "INSERT INTO BOOKS (BOOK_NAME,AUTHOR_NAME,PUBLISHER,CATEGORY,DESCRIPTION,URL) VALUES (?,?,?,?,?,?)";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1,book.getBookName());
+			ps.setString(2,book.getAuthorName());
+			ps.setString(3,book.getPublisherName());
+			ps.setString(4,book.getCategory());
+			ps.setString(5,book.getDescription());
+			ps.setString(6,book.getUrl());
+			}
+			else{
+				sql="DELETE FROM BOOKS WHERE BOOK_NAME=?";
+				ps = conn.prepareStatement(sql);
+				ps.setString(1,book.getBookName());
+			}
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnectionUtil.close(ps, null);
+			DBConnectionUtil.closeConection(conn);
+		}
+		return false;
+		
+	}
+}

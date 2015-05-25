@@ -1,0 +1,31 @@
+package org.rongubombu.db.servlets;
+
+import java.io.IOException;
+import java.util.Timer;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.rongubombu.db.EsTimer;
+
+/**
+ * Servlet implementation class EsTimerScheduler
+ */
+@WebServlet("/EsTimerScheduler")
+public class EsTimerScheduler extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		new Timer().schedule(new EsTimer(), 0L, 60*60*1000);
+	}
+
+}

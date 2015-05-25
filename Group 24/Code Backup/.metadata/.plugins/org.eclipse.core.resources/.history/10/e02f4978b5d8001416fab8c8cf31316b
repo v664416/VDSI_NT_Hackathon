@@ -1,0 +1,43 @@
+package org.rongubombu.dbprocessors;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.rongubombu.db.DBConnectionUtil;
+
+import com.sun.jersey.api.view.Viewable;
+
+import org.rongubombu.db.DBConnectionUtil;
+import org.rongubombu.interfaces.SearchProcessor;
+
+public class DBSearchProcessor implements SearchProcessor{
+	
+	public String getVal(){
+		Connection conn = DBConnectionUtil.getConection();
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery("select * from publisher");
+		boolean flag = rs.next();
+		StringBuilder sb = new StringBuilder();
+		while(flag){
+			sb.append("\n pub_id=").append(rs.getInt("pub_id"));
+			sb.append(", pub_name=").append(rs.getString("pub_name"));
+			flag = rs.next();
+		}
+		DBConnectionUtil.closeConection(conn);
+	}
+
+}

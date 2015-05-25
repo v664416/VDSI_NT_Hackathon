@@ -1,0 +1,5 @@
+package org.rongubombu.util;
+
+public class LogUtil {
+
+}

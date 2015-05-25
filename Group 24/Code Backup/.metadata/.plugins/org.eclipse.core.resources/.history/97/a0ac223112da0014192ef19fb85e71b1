@@ -1,0 +1,25 @@
+package org.rongubombu.db.servlets;
+
+import java.io.IOException;
+import java.util.Timer;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.rongubombu.db.EsTimer;
+
+
+public class EsTimerScheduler{
+
+
+
+
+
+	public void process(){
+		
+	}
+
+}

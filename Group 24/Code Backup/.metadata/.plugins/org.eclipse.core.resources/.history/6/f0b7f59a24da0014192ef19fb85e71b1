@@ -1,0 +1,61 @@
+package org.rongubombu.db;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import jdk.nashorn.internal.codegen.CompilerConstants.Call;
+
+public class CallableExecutor {
+
+	private static final CallableExecutor instance = new CallableExecutor();
+	private static ThreadPoolExecutor threadPoolExecutor = null;
+	private List<Future<?>> futures = new ArrayList<Future<?>>();
+	private CallableExecutor() {
+
+	}
+
+	public static CallableExecutor getInstance() {
+		return instance;
+	}
+
+	public void process(Callable<?> processor) {
+		if (null == threadPoolExecutor) {
+			threadPoolExecutor = new ThreadPoolExecutor(50, 50, 0L,
+					TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		}
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		if (null != processor) {
+			
+				
+					futures.add(threadPoolExecutor.submit(processor));
+				
+		}
+		
+	}
+	
+	public void check(){
+		for (Future<?> future : futures) {
+			if (null != future) {
+				try {
+					future.get();
+				} catch (Exception e) {
+					future.cancel(false);
+				}
+			}
+		}
+		shutdown();
+		futures= new ArrayList<Future<?>>();
+	}
+
+	private void shutdown() {
+		if (null != threadPoolExecutor) {
+			threadPoolExecutor.shutdown();
+		}
+	}
+
+}

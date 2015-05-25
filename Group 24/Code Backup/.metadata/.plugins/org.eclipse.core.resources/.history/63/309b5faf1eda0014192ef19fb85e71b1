@@ -1,0 +1,60 @@
+package org.rongubombu.db;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.List;
+
+import javax.servlet.ServletException;
+
+import org.rongubombu.db.Book;
+import org.rongubombu.db.CatalogProcessor;
+import org.rongubombu.db.DBConnectionUtil;
+import org.rongubombu.db.DbUpdateProcessor;
+
+
+
+public class DbUpdater{
+
+	private static final int incr_var = 5000;
+
+	public void process() throws ServletException, IOException {
+		List<Book> books = CatalogProcessor.getInstance().processCatalog();
+		int count=books.size();
+		int nbrItr = (count / incr_var);
+		if((count%incr_var)>0)
+		{
+			++nbrItr;
+		}
+		
+		if (null != books && !books.isEmpty()) {
+			
+			for (Book book : books) {
+				if (null != book) {
+					DbUpdateProcessor helper = new DbUpdateProcessor(book);
+					helper.updateBook(book);
+				}
+			}
+		}
+		deleteBooksTrigger();
+	}
+	
+	private void deleteBooksTrigger(){
+		PreparedStatement ps = null;
+		Connection conn=null;
+		try {
+			conn = DBConnectionUtil.getConection();
+			ps = conn.prepareStatement("TRUNCATE BOOKS_TRIGGER");
+			ps.executeUpdate();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}finally {
+			DBConnectionUtil.close(ps, null);
+			DBConnectionUtil.closeConection(conn);
+		}
+		
+
+	}
+
+}

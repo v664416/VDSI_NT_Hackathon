@@ -1,0 +1,7 @@
+package org.rongubombu.dbprocessors;
+
+import org.rongubombu.interfaces.SearchProcessor;
+
+public class DBSearchProcessor implements SearchProcessor{
+
+}

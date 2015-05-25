@@ -1,0 +1,90 @@
+package org.rongubombu.db.servlets;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.rongubombu.db.CallableExecutor;
+import org.rongubombu.db.DBConnectionUtil;
+import org.rongubombu.db.Processor;
+
+/**
+ * Servlet implementation class EsUpdater
+ */
+@WebServlet("/EsUpdater")
+public class EsUpdater extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private static final int incr_var = 1000;
+
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		readDBAndUpdateElasticSearch();
+	}
+	
+	private void readDBAndUpdateElasticSearch() {
+		int count = getCount();
+		int startIndex = 0;
+		int lastIndex = incr_var;
+		if(count<incr_var)
+		{
+			lastIndex = count;
+		}
+		int nbrItr = (count / incr_var);
+		if((count%incr_var)>0)
+		{
+			++nbrItr;
+		}
+		try
+		{
+			List<Processor> processors = new ArrayList<Processor>();
+			for (int i = 0; i<nbrItr; i++)
+			{
+				processors.add(new Processor(startIndex, lastIndex));
+				startIndex = lastIndex + 1;
+				lastIndex = lastIndex + incr_var;
+			}
+			CallableExecutor.getInstance().process(processors);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private int getCount() {
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBConnectionUtil.getConection();
+			String sql = "SELECT MAX(BOOK_ID) AS COUNT FROM BOOKS";
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("COUNT");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnectionUtil.close(ps, rs);
+			DBConnectionUtil.closeConection(conn);
+		}
+		return 0;
+	}
+
+}

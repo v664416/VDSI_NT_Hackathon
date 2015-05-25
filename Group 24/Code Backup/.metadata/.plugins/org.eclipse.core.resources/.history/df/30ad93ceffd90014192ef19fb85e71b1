@@ -1,0 +1,12 @@
+package org.rongubombu.db;
+
+import java.util.TimerTask;
+
+public class EsTimer extends TimerTask{
+
+	@Override
+	public void run() {
+		
+	}
+
+}

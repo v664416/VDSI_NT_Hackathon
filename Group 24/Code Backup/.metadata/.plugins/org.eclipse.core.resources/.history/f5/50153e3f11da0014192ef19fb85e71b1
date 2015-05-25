@@ -1,0 +1,5 @@
+package org.rongubombu.web;
+
+public class AdminController {
+
+}

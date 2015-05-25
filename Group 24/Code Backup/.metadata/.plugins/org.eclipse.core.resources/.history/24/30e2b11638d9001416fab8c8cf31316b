@@ -1,0 +1,32 @@
+package org.rongubombu.db;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class RunnableExecutor {
+
+	private static final RunnableExecutor instance = new RunnableExecutor();
+	private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(50, 50, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+	private RunnableExecutor(){
+		
+	}
+	public static RunnableExecutor getInstance() {
+		return instance;
+	}
+	
+	public void process(List<Processor> processors){
+		List<Future<Void>> futures = new ArrayList<Future<Void>>();
+		if(null!=processors){
+			for(Processor processor : processors){
+				if(null!=processor){
+					futures.add(threadPoolExecutor.submit(processor));
+				}
+			}
+		}
+	}
+	
+}

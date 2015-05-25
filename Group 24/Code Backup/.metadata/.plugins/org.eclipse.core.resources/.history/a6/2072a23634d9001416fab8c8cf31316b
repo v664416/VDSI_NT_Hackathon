@@ -1,0 +1,10 @@
+package org.rongubombu.db;
+
+public class Processor implements Runnable{
+
+	@Override
+	public void run() {
+		
+	}
+
+}

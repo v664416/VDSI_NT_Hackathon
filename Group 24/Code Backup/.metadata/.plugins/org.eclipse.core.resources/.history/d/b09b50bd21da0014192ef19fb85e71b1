@@ -1,0 +1,69 @@
+package org.rongubombu.db;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+public class DbUpdateProcessor implements Callable<Boolean> {
+
+	private List<Book> books;
+
+	public DbUpdateProcessor(List<Book> books) {
+		this.books = books;
+	}
+
+	public boolean updateBook(List<Book> books) {
+		Connection conn = null;
+		Statement ps = null;
+		try {
+			conn = DBConnectionUtil.getConection();
+			ps = conn.createStatement();
+			for (Book book : books) {
+				String sql = "";
+				if (book.getAction().equals(ACTION.ADD)) {
+					sql = "INSERT INTO BOOKS (BOOK_NAME,AUTHOR_NAME,PUBLISHER,CATEGORY,DESCRIPTION,URL) VALUES ('"
+							+ book.getBookName()
+							+ "', '"
+							+book.getAuthorName()
+							+ "', '"
+							+book.getPublisherName()
+							+ "', '"
+							+  book.getCategory()
+							+ "', '"
+							+book.getDescription()
+							+ "', '" + book.getUrl() + "')";
+
+					ps.setString(1, book.getBookName());
+					ps.setString(2, book.getAuthorName());
+					ps.setString(3, book.getPublisherName());
+					ps.setString(4, book.getCategory());
+					ps.setString(5, book.getDescription());
+					ps.setString(6, book.getUrl());
+				}
+
+				else {
+					sql = "DELETE FROM BOOKS WHERE BOOK_NAME=?";
+					ps = conn.prepareStatement(sql);
+					ps.setString(1, book.getBookName());
+				}
+				ps.addBatch();
+			}
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			DBConnectionUtil.close(ps, null);
+			DBConnectionUtil.closeConection(conn);
+		}
+		return true;
+
+	}
+
+	@Override
+	public Boolean call() throws Exception {
+		return updateBook(books);
+	}
+}

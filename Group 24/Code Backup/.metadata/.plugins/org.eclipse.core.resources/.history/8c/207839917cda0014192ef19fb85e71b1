@@ -1,0 +1,88 @@
+package org.rongubombu.db;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CatalogProcessor {
+
+	private static final CatalogProcessor instance = new CatalogProcessor();
+	private static final String FILEPATH = "D:/Dump/";
+	private static final String SEPERATOR = ",";
+	private static final String FILENAME="data.csv";
+	private static final int INCR_VAL=5000;
+
+	private CatalogProcessor() {
+
+	}
+
+	public static CatalogProcessor getInstance() {
+		return instance;
+	}
+
+	public static void main(String[] args) {
+		CatalogProcessor.getInstance().processCatalog();
+	}
+
+	public List<Book> processCatalog() {
+		BufferedReader br = null;
+		String line = "";
+		CallableExecutor executoer=null;
+		List<Book> books = new ArrayList<Book>();
+		try {
+
+			long strter = System.currentTimeMillis();
+			executoer = new CallableExecutor();
+			br = new BufferedReader(new FileReader(FILEPATH + FILENAME));
+			List<String> sqls= new ArrayList<String>();
+			int counter=0;
+			while ((line = br.readLine()) != null) {
+				String[] values = line.split(SEPERATOR);
+				if (null != values && values.length == 7) {
+					
+					if(null!=values[6]&&"ADD".equals(values[6].trim())){
+						sqls.add("INSERT INTO BOOKS (BOOK_NAME,AUTHOR_NAME,PUBLISHER,CATEGORY,DESCRIPTION,URL) VALUES ('"
+								+ values[0]
+								+ "', '"
+								+values[1]
+								+ "', '"
+								+values[2]
+								+ "', '"
+								+ values[3]
+								+ "', '"
+								+values[4]
+								+ "', '" + values[5] + "')");
+					}				
+				}
+				counter++;
+				if(counter==INCR_VAL){
+					counter=0;
+					
+				}
+			}
+			if(!sqls.isEmpty()){
+				
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if(null!=executoer){
+				executoer.check();
+			}
+		}
+		return books;
+	}
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Ant test project" default="build" basedir=".">
+	<target name="build" >
+		<javac srcdir="src" destdir="build/src" debug="true" includes="**/*.java" />
+	</target>
+</project>
