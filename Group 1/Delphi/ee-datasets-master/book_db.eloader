@@ -1,0 +1,9 @@
+TRY DELETE /book_db
+PUT /book_db {"mappings": {"book": {"properties": {"title": {"type": "string"}, "author": {"type": "string"}}}}}
+BULK INDEX book_db/book
+{"_id": 1, "title": "abc","author":"xyz"}
+{"_id": 2, "title": "bcd","author":"xyz"}
+{"_id": 3, "title": "cde","author":"xyz"}
+{"_id": 4, "title": "def","author":"xyz"}
+{"_id": 5, "title": "efg","author":"xyz"}
+
