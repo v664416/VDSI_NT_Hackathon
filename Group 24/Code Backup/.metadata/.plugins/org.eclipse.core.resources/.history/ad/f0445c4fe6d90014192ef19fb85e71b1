@@ -1,8 +1,0 @@
-package org.rongubombu.db;
-
-public class DbHelper {
-	
-	public void updateBook(Book book){
-		
-	}
-}

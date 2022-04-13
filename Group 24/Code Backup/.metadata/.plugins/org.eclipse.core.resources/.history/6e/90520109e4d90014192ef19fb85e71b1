@@ -1,8 +1,0 @@
-package org.rongubombu.db;
-
-import javax.servlet.http.HttpServlet;
-
-public class DbProcessor extends HttpServlet{
-
-	
-}

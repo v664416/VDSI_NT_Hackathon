@@ -1,9 +1,0 @@
-package org.rongubombu.db;
-
-public class DbHelper {
-	
-	public boolean updateBook(Book book){
-		return false;
-		
-	}
-}

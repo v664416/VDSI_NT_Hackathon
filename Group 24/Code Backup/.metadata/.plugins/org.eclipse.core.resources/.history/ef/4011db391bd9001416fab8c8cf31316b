@@ -1,9 +1,0 @@
-package org.rongubombu.interfaces;
-
-import java.util.List;
-import java.util.Map;
-
-public interface SearchProcessor {
-	String getQueryResult(String query) throws Exception;
-	List<Map<String,Object>> getQueryResult(String query) throws Exception;
-}

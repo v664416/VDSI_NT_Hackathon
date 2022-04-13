@@ -1,7 +1,0 @@
-package org.rongubombu.factory;
-
-public class RBFactory {
-	public static SearchProcessor getSearchProcessor(){
-		return new DBSearchProcessor();
-	}
-}
